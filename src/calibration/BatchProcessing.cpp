@@ -1,10 +1,12 @@
-#include "BatchProcessing.hpp"
-#include "Logging.hpp"
+#include "calibration/BatchProcessing.hpp"
+
 #include <algorithm>
 #include <execution>
 #include <numeric>
+#include <spdlog/spdlog.h>
 #include <tbb/blocked_range.h>
 #include <tbb/parallel_for.h>
+#include <opencv2/core/ocl.hpp>
 
 // Implement batch processing using C++20 ranges and parallelism
 std::vector<cv::Mat>
@@ -12,8 +14,7 @@ batch_process_images(const std::vector<cv::Mat> &images,
                      const std::function<cv::Mat(const cv::Mat &)> &processor,
                      const OptimizationParams &params) {
 
-  const auto &logger = Logger::getInstance();
-  logger->debug("Starting batch processing of {} images", images.size());
+  spdlog::debug("Starting batch processing of {} images", images.size());
 
   std::vector<cv::Mat> results(images.size());
 
@@ -36,7 +37,7 @@ batch_process_images(const std::vector<cv::Mat> &images,
                 cv::Mat result = processor(uimage.getMat(cv::ACCESS_READ));
                 results[i] = result;
               } catch (const std::exception &e) {
-                logger->error("Error processing image {}: {}", i, e.what());
+                spdlog::error("Error processing image {}: {}", i, e.what());
                 results[i] = images[i].clone(); // Return original on error
               }
             });
@@ -46,7 +47,7 @@ batch_process_images(const std::vector<cv::Mat> &images,
               try {
                 results[i] = processor(images[i]);
               } catch (const std::exception &e) {
-                logger->error("Error processing image {}: {}", i, e.what());
+                spdlog::error("Error processing image {}: {}", i, e.what());
                 results[i] = images[i].clone(); // Return original on error
               }
             });
@@ -59,7 +60,7 @@ batch_process_images(const std::vector<cv::Mat> &images,
                             try {
                               results[i] = processor(images[i]);
                             } catch (const std::exception &e) {
-                              logger->error("Error processing image {}: {}", i,
+                              spdlog::error("Error processing image {}: {}", i,
                                             e.what());
                               results[i] = images[i].clone();
                             }
@@ -72,16 +73,16 @@ batch_process_images(const std::vector<cv::Mat> &images,
         try {
           results[i] = processor(images[i]);
         } catch (const std::exception &e) {
-          logger->error("Error processing image {}: {}", i, e.what());
+          spdlog::error("Error processing image {}: {}", i, e.what());
           results[i] = images[i].clone();
         }
       }
     }
 
-    logger->info("Batch processing completed for {} images", images.size());
+    spdlog::info("Batch processing completed for {} images", images.size());
     return results;
   } catch (const std::exception &e) {
-    logger->error("Error during batch processing: {}", e.what());
+    spdlog::error("Error during batch processing: {}", e.what());
     return images; // Return original images on error
   }
 }

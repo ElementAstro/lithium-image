@@ -1,6 +1,5 @@
 #pragma once
 
-#include "CoreTypes.hpp"
 #include "Parameters.hpp"
 #include <opencv2/opencv.hpp>
 

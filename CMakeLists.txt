@@ -11,9 +11,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # 编译选项
 option(IMAGE_CALIB_BUILD_SHARED "Build shared library" ON)
-option(IMAGE_CALIB_BUILD_EXAMPLES "Build example applications" ON)
+option(IMAGE_CALIB_BUILD_EXAMPLES "Build example applications" OFF)
 option(IMAGE_CALIB_BUILD_TESTS "Build test applications" OFF)
-option(IMAGE_CALIB_USE_TBB "Use Intel TBB for parallelism" ON)
+option(IMAGE_CALIB_USE_TBB "Use Intel TBB for parallelism" OFF)  # Change to OFF
 option(IMAGE_CALIB_USE_SIMD "Enable SIMD optimizations" ON)
 option(IMAGE_CALIB_USE_OPENCL "Enable OpenCL GPU support" ON)
 
@@ -46,11 +46,13 @@ if(IMAGE_CALIB_USE_SIMD)
     endif()
 endif()
 
+include_directories(include)
+
 # 添加子目录
 add_subdirectory(src)
 
 if(IMAGE_CALIB_BUILD_EXAMPLES)
-    add_subdirectory(examples)
+   # add_subdirectory(examples)
 endif()
 
 if(IMAGE_CALIB_BUILD_TESTS)
@@ -64,7 +66,7 @@ install(DIRECTORY include/ DESTINATION include)
 # 导出包配置
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/ImageCalibrationLibConfig.cmake.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ImageCalibrationLibConfig.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/ImageCalibrationLibConfig.cmake
     INSTALL_DESTINATION lib/cmake/ImageCalibrationLib
 )

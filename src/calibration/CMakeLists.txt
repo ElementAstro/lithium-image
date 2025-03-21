@@ -53,7 +53,7 @@ endif()
 # 生成导出头文件
 include(GenerateExportHeader)
 generate_export_header(ImageCalibrationLib
-    EXPORT_FILE_NAME ${CMAKE_SOURCE_DIR}/include/ImageCalibration/Export.hpp
+    EXPORT_FILE_NAME ${CMAKE_SOURCE_DIR}/include/calibration/Export.hpp
 )
 
 # 安装库文件
